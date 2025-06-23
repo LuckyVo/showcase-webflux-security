@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+
+  app:
+    container_name: apps
+    build:
+      context: .
+      dockerfile: Dockerfile-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/shop
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
+    depends_on:
+      - postgres
+      - cache-db
+    networks:
+      - app-network
+
+  postgres:
+    image: "postgres"
+    container_name: db-shop-reactive-sec
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shop
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db-data:/val/lib/postgresql/data
+    networks:
+      - app-network
+
+  payment:
+    container_name: payments
+    build:
+      context: .
+      dockerfile: Dockerfile-payment
+    ports:
+      - "8081:8081"
+    command: java -jar /app/payment.jar
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/shop
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
+    depends_on:
+      - postgres
+      - cache-db
+    networks:
+      - app-network
+
+  cache-db:
+    image: redis:7.4-bookworm
+    container_name: app-cache-db
+    ports:
+      - "6379:6379"
+    command: [ "redis-server" ]
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,19 @@
+FROM gradle:8.13-jdk21 AS builder
+
+WORKDIR /showcase-webflux-security
+
+COPY --chown=gradle:gradle . .
+
+RUN gradle :payment:clean :payment:bootJar
+
+FROM openjdk:21-jdk
+
+COPY --from=builder /showcase-webflux-security/payment/build/libs/*.jar app.jar
+
+EXPOSE 8081
+
+RUN chgrp -R 0 . && \
+    chmod -R g=u . && \
+    chmod +x /app.jar
+
+ENTRYPOINT ["java", "-jar", "/app.jar"]

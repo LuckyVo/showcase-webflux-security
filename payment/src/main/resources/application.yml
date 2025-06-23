@@ -1,0 +1,32 @@
+server:
+  port: 8081
+  servlet:
+    encoding:
+      charset: UTF-8
+  shutdown: graceful
+
+spring:
+  profiles:
+    active: prod
+  main:
+    allow-bean-definition-overriding: true
+    banner-mode: off
+  application:
+    name: showcase-webflux-security
+  thymeleaf:
+    encoding: UTF-8
+    cache: false
+  r2dbc:
+    url: ${SPRING_R2DBC_URL}
+    username: ${SPRING_R2DBC_USERNAME}
+    password: ${SPRING_R2DBC_PASSWORD}
+    pool:
+      enabled: true
+      initial-size: 5
+      max-size: 10
+      max-idle-time: 30s
+      max-life-time: 10m
+      validation-query: SELECT 1
+
+app:
+  start-balance: 1000000
