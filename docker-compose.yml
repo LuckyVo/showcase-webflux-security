@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   app:
-    container_name: apps
+    container_name: app
     build:
       context: .
       dockerfile: Dockerfile-app
@@ -36,13 +36,12 @@ services:
       - app-network
 
   payment:
-    container_name: payments
+    container_name: payment
     build:
       context: .
       dockerfile: Dockerfile-payment
     ports:
       - "8081:8081"
-    command: java -jar /app/payment.jar
     environment:
       SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/shop
       SPRING_R2DBC_USERNAME: postgres
