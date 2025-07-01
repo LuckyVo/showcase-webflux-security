@@ -69,6 +69,8 @@ services:
     ports:
       - "6380:6380"
     command: [ "redis-server", "--port 6380" ]
+    networks:
+      - app-network
 
   auth-server:
     image: quay.io/keycloak/keycloak:26.1.3
