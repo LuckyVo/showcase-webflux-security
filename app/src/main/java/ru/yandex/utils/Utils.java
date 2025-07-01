@@ -1,21 +1,16 @@
 package ru.yandex.utils;
 
 
-import ru.yandex.entity.User;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
+import ru.yandex.entity.User;
 
 import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Utils {
 
-    public static Optional<Long> extractUserIdToOptional(UserDetails user) {
-        return Optional.ofNullable(user == null ? null : ((User) user).getId());
-    }
-
-    public static long extractUserId(UserDetails user) {
-        return ((User) user).getId();
+    public static Optional<Long> extractUserId(User user) {
+        return Optional.ofNullable(user == null ? null : user.getId());
     }
 }

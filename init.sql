@@ -12,7 +12,11 @@ create table if not exists orders
     id        serial primary key not null,
     status    varchar            not null,
     completed timestamp          not null default now(),
-    created   timestamp          not null default now()
+    created   timestamp          not null default now(),
+    user_id   bigint,
+    constraint fk_orders_users foreign key (user_id)
+        references user_details (id) match simple
+        on update cascade on delete cascade
 );
 
 create table if not exists orders_items
@@ -35,6 +39,31 @@ create table if not exists accounts
     user_id integer            not null,
     balance float              not null
 );
+
+create table if not exists user_details
+(
+    id                 serial primary key,
+    username           varchar(255)             not null unique,
+    password           varchar(255)             not null,
+    roles              varchar(50)              not null,
+    account_non_locked boolean                  not null default true,
+    created            timestamp with time zone not null
+);
+
+insert into user_details(username, password, roles, created)
+values ('admin',
+        '$2a$10$sDqj8YbK78ZdBcUU1O6/o.BSep4OkUkNcMnAXTsyd/FT.I.9IOr5a',
+        '["ADMIN_ROLE"]',
+        CURRENT_DATE)
+on conflict do nothing;
+
+insert into user_details(username, password, roles, created)
+values ('yandex',
+        '$2a$10$sDqj8YbK78ZdBcUU1O6/o.BSep4OkUkNcMnAXTsyd/FT.I.9IOr5a',
+        '["USER_ROLE"]',
+        CURRENT_DATE)
+on conflict do nothing;
+
 
 
 insert into items (title, description, img_path, price)

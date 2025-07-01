@@ -1,5 +1,6 @@
 package ru.yandex.service;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import ru.yandex.entity.Item;
 import ru.yandex.repository.ItemRepository;
 import ru.yandex.repository.OrderItemRepository;
@@ -31,6 +32,7 @@ public class ItemServiceImpl implements ItemService {
     private final OrderItemRepository orderItemRepository;
     private final ItemCacheService itemCacheService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public Mono<Item> save(Item item) {
         log.info("save item: {}", item);

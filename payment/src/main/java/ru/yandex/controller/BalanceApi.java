@@ -5,6 +5,7 @@
  */
 package ru.yandex.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import ru.yandex.dto.BalanceResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,34 +34,36 @@ public interface BalanceApi {
      *
      * @param userId User&#39;s ID (required)
      * @return Current balance retrieved successfully (status code 200)
-     *         or User not found (status code 404)
-     *         or Internal server error (status code 500)
+     * or User not found (status code 404)
+     * or Internal server error (status code 500)
      */
     @Operation(
-        operationId = "balanceGet",
-        summary = "Get user's current balance",
-        tags = { "Balance" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Current balance retrieved successfully", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponse.class))
-            }),
-            @ApiResponse(responseCode = "404", description = "User not found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponse.class))
-            }),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponse.class))
-            })
-        }
+            operationId = "balanceGet",
+            summary = "Get user's current balance",
+            tags = {"Balance"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Current balance retrieved successfully", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "404", description = "User not found", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponse.class))
+                    })
+            },
+            security = {
+                    @SecurityRequirement(name = "bearerAuth")
+            }
     )
     @RequestMapping(
-        method = RequestMethod.GET,
-        value = "/balance",
-        produces = { "application/json" }
+            method = RequestMethod.GET,
+            value = "/balance",
+            produces = {"application/json"}
     )
-    
     Mono<ResponseEntity<BalanceResponse>> balanceGet(
-        @NotNull @Parameter(name = "userId", description = "User's ID", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "userId", required = true) Long userId,
-        @Parameter(hidden = true) final ServerWebExchange exchange
+            @NotNull @Parameter(name = "userId", description = "User's ID", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "userId", required = true) Long userId,
+            @Parameter(hidden = true) final ServerWebExchange exchange
     );
 
 }

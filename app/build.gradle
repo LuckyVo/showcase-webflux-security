@@ -13,23 +13,24 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-oauth2-client'
+    implementation 'org.springframework.session:spring-session-data-redis'
 
     //========== Database ==========
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
-    implementation "org.postgresql:r2dbc-postgresql:${postgresR2dbcVersion}"
-    implementation 'org.liquibase:liquibase-core'
-    implementation "org.postgresql:postgresql:${postgresVersion}"
+    implementation "org.postgresql:r2dbc-postgresql"
+    implementation "org.postgresql:postgresql"
 
     //========== Mapper ==========
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    implementation "org.mapstruct:mapstruct"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding"
+    annotationProcessor "org.mapstruct:mapstruct-processor"
 
     //========== Utils ==========
-    implementation "org.projectlombok:lombok:${lombokVersion}"
+    implementation "org.projectlombok:lombok"
     annotationProcessor 'org.projectlombok:lombok'
-    implementation("com.google.guava:guava:${guavaVersion}")
+    implementation("com.google.guava:guava")
 
     //========== Test ==========
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

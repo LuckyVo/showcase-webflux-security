@@ -1,5 +1,7 @@
 package ru.yandex.service;
 
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import ru.yandex.entity.Item;
 import ru.yandex.repository.ItemRepository;
 import ru.yandex.repository.OrderItemRepository;
@@ -30,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public Mono<Order> save(Order order) {
         log.info("save order: {}", order);
@@ -42,16 +45,20 @@ public class OrderServiceImpl implements OrderService {
     public Flux<Order> findAllCompletedOrders(long userId) {
         log.info("find all completed orders. userId: {}", userId);
 
-        return orderRepository.findByUserIdAndStatus(userId , Status.COMPLETED)
+        return orderRepository.findByUserIdAndStatus(userId, Status.COMPLETED)
                 .doOnNext(order -> log.info("found completed order: {}", order));
     }
 
+    @PostAuthorize(
+            "authentication.principal instanceof T(ru.yandex.entity.User) and " +
+                    "authentication.principal.id == returnObject.userId"
+    )
     @Override
-    public Mono<Order> findById(long userId, long orderId) {
+    public Mono<Order> findById(long orderId) {
         log.info("find order by orderId {}", orderId);
 
         return orderRepository.findById(orderId)
-                .switchIfEmpty(Mono.error(() -> new OrderNotFoundException(userId, orderId)))
+                .switchIfEmpty(Mono.error(() -> new OrderNotFoundException(orderId)))
                 .doOnNext(order -> log.info("found by orderId {} order: {}", orderId, order));
     }
 

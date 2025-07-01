@@ -29,9 +29,17 @@ spring:
       max-idle-time: 30s
       max-life-time: 10m
       validation-query: SELECT 1
-  data:
-    redis:
+  redis:
+    cache:
       host: cache-db
-  cache:
-    redis:
+      port: 6379
       time-to-live-seconds: 60
+    session:
+      host: session-db
+      port: 6380
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://auth-server:8082/realms/master

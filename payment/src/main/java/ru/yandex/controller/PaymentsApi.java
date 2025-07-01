@@ -5,6 +5,7 @@
  */
 package ru.yandex.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import ru.yandex.dto.PaymentRequest;
 import ru.yandex.dto.PaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,41 +31,43 @@ public interface PaymentsApi {
     /**
      * POST /pay : Process a payment by deducting amount from user&#39;s balance
      *
-     * @param paymentRequest  (required)
+     * @param paymentRequest (required)
      * @return Payment successful (status code 200)
-     *         or Insufficient funds or invalid request (status code 400)
-     *         or User not found (status code 404)
-     *         or Internal server error (status code 500)
+     * or Insufficient funds or invalid request (status code 400)
+     * or User not found (status code 404)
+     * or Internal server error (status code 500)
      */
     @Operation(
-        operationId = "payPost",
-        summary = "Process a payment by deducting amount from user's balance",
-        tags = { "Payments" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Payment successful", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = PaymentResponse.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Insufficient funds or invalid request", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = PaymentResponse.class))
-            }),
-            @ApiResponse(responseCode = "404", description = "User not found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = PaymentResponse.class))
-            }),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = PaymentResponse.class))
-            })
-        }
+            operationId = "payPost",
+            summary = "Process a payment by deducting amount from user's balance",
+            tags = {"Payments"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Payment successful", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = PaymentResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Insufficient funds or invalid request", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = PaymentResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "404", description = "User not found", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = PaymentResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = PaymentResponse.class))
+                    })
+            },
+            security = {
+                    @SecurityRequirement(name = "bearerAuth")
+            }
     )
     @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/pay",
-        produces = { "application/json" },
-        consumes = { "application/json" }
+            method = RequestMethod.POST,
+            value = "/pay",
+            produces = {"application/json"},
+            consumes = {"application/json"}
     )
-    
     Mono<ResponseEntity<PaymentResponse>> payPost(
-        @Parameter(name = "PaymentRequest", description = "", required = true) @Valid @RequestBody Mono<PaymentRequest> paymentRequest,
-        @Parameter(hidden = true) final ServerWebExchange exchange
+            @Parameter(name = "PaymentRequest", description = "", required = true) @Valid @RequestBody Mono<PaymentRequest> paymentRequest,
+            @Parameter(hidden = true) final ServerWebExchange exchange
     );
 
 }

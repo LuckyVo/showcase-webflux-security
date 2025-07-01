@@ -1,29 +1,28 @@
 package ru.yandex.controller;
 
-import ru.yandex.dto.ActionDto;
-import ru.yandex.dto.ItemDto;
-import ru.yandex.dto.PagingDto;
-import ru.yandex.dto.ViewParamDto;
-import ru.yandex.mapper.ActionMapper;
-import ru.yandex.mapper.ItemMapper;
-import ru.yandex.service.ItemService;
-import ru.yandex.service.OrderService;
-import ru.yandex.utils.SortType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.yandex.dto.ActionDto;
+import ru.yandex.dto.ItemDto;
+import ru.yandex.dto.PagingDto;
+import ru.yandex.dto.ViewParamDto;
+import ru.yandex.entity.User;
+import ru.yandex.mapper.ActionMapper;
+import ru.yandex.mapper.ItemMapper;
+import ru.yandex.service.ItemService;
+import ru.yandex.service.OrderService;
+import ru.yandex.utils.SortType;
 
 import java.util.List;
 
 import static ru.yandex.utils.Utils.extractUserId;
-import static ru.yandex.utils.Utils.extractUserIdToOptional;
 
 @RequiredArgsConstructor
 @Controller
@@ -41,7 +40,7 @@ public class MainController {
 
 
     @GetMapping
-    public Mono<Rendering> getItems(@AuthenticationPrincipal UserDetails user,
+    public Mono<Rendering> getItems(@AuthenticationPrincipal User user,
                                     @RequestParam(defaultValue = "") String search,
                                     @RequestParam(defaultValue = "NO") SortType sort,
                                     @RequestParam(defaultValue = "10") Integer pageSize,
@@ -50,7 +49,7 @@ public class MainController {
                 user, search, sort, pageNumber, pageSize);
 
         Flux<List<ItemDto>> partitionItemDto =
-                itemService.findItemsWithQuantity(extractUserIdToOptional(user), search, sort, pageNumber - 1, pageSize)
+                itemService.findItemsWithQuantity(extractUserId(user), search, sort, pageNumber - 1, pageSize)
                         .map(entry -> itemMapper.toDto(entry.getKey(), entry.getValue()))
                         .doOnNext(itemDto -> log.info("itemDto: {}", itemDto.getId()))
                         .buffer(partitionCount)
@@ -78,14 +77,14 @@ public class MainController {
     }
 
     @PostMapping("/{id}")
-    public Mono<String> changeItemQuantityInCart(@AuthenticationPrincipal UserDetails user,
+    public Mono<String> changeItemQuantityInCart(@AuthenticationPrincipal User user,
                                                  @PathVariable long id,
                                                  @ModelAttribute ActionDto action,
                                                  @ModelAttribute ViewParamDto viewParamDto) {
         log.info("incoming request for change item quantity in cart from user {}. item id {}, action {}, viewParamDto {}",
                 user, id, action, viewParamDto);
 
-        return orderService.changeItemQuantityInCart(extractUserId(user), id, actionMapper.to(action))
+        return orderService.changeItemQuantityInCart(user.getId(), id, actionMapper.to(action))
                 .flatMap(order ->
                         Mono.just("redirect:/main/items" +
                                 "?" +
